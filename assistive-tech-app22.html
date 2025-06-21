@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assistive Technologies</title>
+  <style>
+    /* CSS Code */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      font-size: 16px;
+      background-color: white;
+      color: black;
+    }
+
+    .header {
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .tool {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .tool h2 {
+      margin-top: 0;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .keyboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .key {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      line-height: 40px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+
+    .key:hover {
+      background-color: #ddd;
+    }
+
+    .output {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <!-- HTML Code -->
+  <header class="header">
+    <h1>Assistive Technologies Web App</h1>
+  </header>
+
+  <main class="container">
+    <!-- Text-to-Speech -->
+    <div class="tool">
+      <h2>Text-to-Speech</h2>
+      <textarea id="userText" placeholder="Enter text here..." rows="3" style="width: 100%;"></textarea>
+      <button class="btn" onclick="textToSpeech()">Speak Text</button>
+    </div>
+
+    <!-- Speech-to-Text -->
+    <div class="tool">
+      <h2>Speech-to-Text</h2>
+      <button class="btn" onclick="startSpeechToText()">Start Listening</button>
+      <p id="speechOutput">Your speech will appear here.</p>
+    </div>
+
+    <!-- Magnifier -->
+    <div class="tool">
+      <h2>Magnifier</h2>
+      <button class="btn" onclick="magnifyText()">Magnify</button>
+      <button class="btn" onclick="resetMagnify()">Reset</button>
+      <p id="magnifyText">Sample text for magnification.</p>
+    </div>
+
+    <!-- Screen Reader Simulation -->
+    <div class="tool">
+      <h2>Screen Reader Simulation</h2>
+      <p id="readerContent">This is a sample content that will be read aloud when the screen reader is activated.</p>
+      <button class="btn" onclick="activateScreenReader()">Activate Screen Reader</button>
+    </div>
+
+    <!-- Text Resizer -->
+    <div class="tool">
+      <h2>Text Resizer</h2>
+      <textarea id="resizableText" rows="3" placeholder="Enter text here..." style="width: 100%; padding: 10px;"></textarea>
+      <button class="btn" onclick="resizeText(2)">Increase Size</button>
+      <button class="btn" onclick="resizeText(-2)">Decrease Size</button>
+    </div>
+
+    <!-- Virtual Keyboard -->
+    <div class="tool">
+      <h2>Virtual Keyboard</h2>
+      <input id="keyboardInput" type="text" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Type here...">
+      <div class="keyboard">
+        <!-- Generate Keys Dynamically -->
+      </div>
+      <button class="btn" onclick="clearInput()">Clear</button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p style="text-align: center;">© 2025 Assistive Technologies</p>
+  </footer>
+
+  <script>
+    // JavaScript Code
+
+    // Text-to-Speech
+    function textToSpeech() {
+      const text = document.getElementById('userText').value || "Please enter text to speak.";
+      const speech = new SpeechSynthesisUtterance(text);
+      speechSynthesis.speak(speech);
+    }
+
+    // Speech-to-Text
+    function startSpeechToText() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.onresult = (event) => {
+        document.getElementById('speechOutput').textContent = event.results[0][0].transcript;
+      };
+      recognition.start();
+    }
+
+    // Magnifier
+    function magnifyText() {
+      document.getElementById('magnifyText').style.transform = "scale(1.5)";
+    }
+
+    function resetMagnify() {
+      document.getElementById('magnifyText').style.transform = "scale(1)";
+    }
+
+    // Screen Reader Simulation
+    function activateScreenReader() {
+      const content = document.getElementById('readerContent').textContent;
+      const speech = new SpeechSynthesisUtterance(content);
+      speechSynthesis.speak(speech);
+    }
+
+    // Text Resizer
+    function resizeText(change) {
+      const resizableText = document.getElementById('resizableText');
+      const currentSize = parseFloat(getComputedStyle(resizableText).fontSize);
+      resizableText.style.fontSize = (currentSize + change) + 'px';
+    }
+
+    // Virtual Keyboard
+    const keyboardInput = document.getElementById('keyboardInput');
+    const keyboardContainer = document.querySelector('.keyboard');
+
+    // Alphabet Keys
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    // Generate Keys
+    alphabet.split("").forEach(letter => {
+      const key = document.createElement('span');
+      key.className = 'key';
+      key.textContent = letter;
+      key.onclick = () => addKey(letter);
+      keyboardContainer.appendChild(key);
+    });
+
+    // Space Key
+    const spaceKey = document.createElement('span');
+    spaceKey.className = 'key';
+    spaceKey.textContent = 'Space';
+    spaceKey.onclick = () => addKey(' ');
+    keyboardContainer.appendChild(spaceKey);
+
+    // Backspace Key
+    const backspaceKey = document.createElement('span');
+    backspaceKey.className = 'key';
+    backspaceKey.textContent = 'Backspace';
+    backspaceKey.onclick = () => backspaceKeyInput();
+    keyboardContainer.appendChild(backspaceKey);
+
+    // Add Key to Input
+    function addKey(key) {
+      keyboardInput.value += key;
+    }
+
+    // Clear Input
+    function clearInput() {
+      keyboardInput.value = '';
+    }
+
+    // Backspace Key Functionality
+    function backspaceKeyInput() {
+      keyboardInput.value = keyboardInput.value.slice(0, -1);
+    }
+  </script>
+</body>
+</html>
